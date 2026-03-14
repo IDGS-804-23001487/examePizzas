@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block container %}
+
+<div class="flex items-start justify-between mb-10">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-800">Pedido</h2>
+        
+    </div>
+    <a href="/orden/nueva"
+        class="text-sm bg-red-600 text-white px-5 py-2.5 hover:bg-red-700 transition-colors rounded shadow">
+        + Nueva pizza
+    </a>
+</div>
+
+{% if comprador %}
+<div class="mb-8 pb-6 border-b border-red-100 bg-white rounded-lg p-5 shadow-sm">
+    <p class="text-xs uppercase tracking-widest text-red-400 mb-3">Datos del cliente</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div>
+            <p class="text-red-300 text-xs">Nombre</p>
+            <p class="font-medium text-gray-800">{{ comprador.nombre }}</p>
+        </div>
+        <div>
+            <p class="text-red-300 text-xs">Dirección</p>
+            <p class="font-medium text-gray-800">{{ comprador.direccion }}</p>
+        </div>
+        <div>
+            <p class="text-red-300 text-xs">Teléfono</p>
+            <p class="font-medium text-gray-800">{{ comprador.telefono }}</p>
+        </div>
+        <div>
+            <p class="text-red-300 text-xs">Fecha</p>
+            <p class="font-medium text-gray-800">{{ comprador.fecha }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-red-600 text-white text-xs uppercase tracking-widest">
+                <th class="text-left px-6 py-4 font-normal">#</th>
+                <th class="text-left px-6 py-4 font-normal">Tamaño</th>
+                <th class="text-left px-6 py-4 font-normal">Extras</th>
+                <th class="text-left px-6 py-4 font-normal">Cantidad</th>
+                <th class="text-right px-6 py-4 font-normal">Subtotal</th>
+                <th class="text-right px-6 py-4 font-normal"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="border-b border-red-50 hover:bg-red-50 transition-colors">
+                <td class="px-6 py-4 text-red-300">{{ loop.index }}</td>
+                <td class="px-6 py-4 font-medium text-gray-800">{{ item.tamano }}</td>
+                <td class="px-6 py-4 text-gray-500">{{ item.extras }}</td>
+                <td class="px-6 py-4 text-gray-700">{{ item.cantidad }}</td>
+                <td class="px-6 py-4 text-right font-semibold text-red-600">${{ item.subtotal }}</td>
+                <td class="px-6 py-4 text-right">
+                    <a href="/orden/eliminar/{{ loop.index0 }}"
+                        class="text-xs text-red-400 hover:text-red-700 underline underline-offset-2">
+                        Quitar
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="px-6 py-16 text-center text-gray-300 text-sm">
+                    — Sin pizzas en el pedido —
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="flex items-center justify-between bg-white rounded-lg shadow-sm px-6 py-4">
+    <div>
+        <p class="text-xs text-red-400 uppercase tracking-widest">Total</p>
+        <p class="text-3xl font-bold text-gray-800">${{ subtotal }}</p>
+    </div>
+    {% if items %}
+    <form method="POST" action="/orden/confirmar">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit"
+            class="bg-red-600 text-white text-sm px-8 py-3 hover:bg-red-700 transition-colors rounded shadow font-medium">
+            Confirmar pedido 
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% endblock %}

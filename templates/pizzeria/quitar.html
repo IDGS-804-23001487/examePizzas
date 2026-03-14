@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block container %}
+
+<div class="mb-8">
+    <h2 class="text-3xl font-bold tracking-tight text-gray-800">Eliminar pizza</h2>
+    <p class="text-sm text-gray-400 mt-1">Confirma que deseas quitar este elemento</p>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <p class="text-xs uppercase tracking-widest text-red-400 mb-6 pb-2 border-b border-red-100">Detalle del elemento</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+        <div>
+            <p class="text-xs uppercase tracking-widest text-red-300 mb-1">Tamaño</p>
+            <p class="font-medium text-gray-800">{{ item.tamano }}</p>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-widest text-red-300 mb-1">Extras</p>
+            <p class="font-medium text-gray-800">{{ item.extras }}</p>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-widest text-red-300 mb-1">Cantidad</p>
+            <p class="font-medium text-gray-800">{{ item.cantidad }}</p>
+        </div>
+        <div>
+            <p class="text-xs uppercase tracking-widest text-red-300 mb-1">Subtotal</p>
+            <p class="font-semibold text-red-600">${{ item.subtotal }}</p>
+        </div>
+    </div>
+
+    <div class="mt-6 bg-red-50 border border-red-200 rounded p-3 text-sm text-red-600">
+        ¿Estás seguro de que deseas eliminar esta pizza del pedido?
+    </div>
+</div>
+
+<div class="flex gap-4">
+    <form method="POST" action="/orden/eliminar/{{ pos }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit"
+            class="bg-red-600 text-white text-sm px-8 py-3 hover:bg-red-700 transition-colors rounded shadow font-medium">
+            Sí, eliminar
+        </button>
+    </form>
+    <a href="/orden"
+        class="text-sm text-gray-500 px-8 py-3 hover:text-gray-800 border border-gray-200 rounded transition-colors">
+        No, volver
+    </a>
+</div>
+
+{% endblock %}

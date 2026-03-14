@@ -1,0 +1,13 @@
+{% macro campo(field) %}
+<div class="mb-5">
+    <label class="block text-xs font-semibold uppercase tracking-widest text-red-400 mb-1">
+        {{ field.label }}
+    </label>
+    {{ field(class="w-full border-b border-red-200 bg-transparent py-2 text-sm text-gray-900 focus:outline-none focus:border-red-500") | safe }}
+    {% if field.errors %}
+        {% for error in field.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endmacro %}

@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block container %}
+<div class="flex flex-col items-center justify-center py-32 text-center">
+    <p class="text-8xl font-bold text-red-100 select-none">404</p>
+    <h2 class="text-xl font-bold mt-4 mb-2 text-gray-800">Página no encontrada</h2>
+    <p class="text-sm text-gray-400 mb-8">La página que buscas no existe o fue movida.</p>
+    <a href="/orden" class="text-sm bg-red-600 text-white px-6 py-2.5 hover:bg-red-700 transition-colors rounded shadow">
+        Volver al inicio
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block container %}
+{% import "_macros.html" as macros %}
+
+<div class="mb-8">
+    <h2 class="text-3xl font-bold tracking-tight text-gray-800">Nueva pizza</h2>
+    <p class="text-sm text-gray-400 mt-1">Completa los datos del cliente y elige tu pizza</p>
+</div>
+
+<form method="POST" action="/orden/nueva">
+    {{ form_cliente.csrf_token }}
+
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <p class="text-xs uppercase tracking-widest text-red-400 mb-6 pb-2 border-b border-red-100">Datos del cliente</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            {{ macros.campo(form_cliente.nombre) }}
+            {{ macros.campo(form_cliente.direccion) }}
+            {{ macros.campo(form_cliente.telefono) }}
+            {{ macros.campo(form_cliente.fecha) }}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <p class="text-xs uppercase tracking-widest text-red-400 mb-6 pb-2 border-b border-red-100">Detalles de la pizza</p>
+
+        <div class="mb-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Tamaño</p>
+            <div class="flex gap-6">
+                {% for subfield in form_pizza.tamano %}
+                <label class="flex items-center gap-2 text-sm cursor-pointer text-gray-700 hover:text-red-600">
+                    {{ subfield(class="w-4 h-4 accent-red-600") }}
+                    {{ subfield.label.text }}
+                </label>
+                {% endfor %}
+            </div>
+            {% for error in form_pizza.tamano.errors %}
+            <p class="text-red-500 text-xs mt-2">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <div class="mb-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">Ingredientes extra</p>
+            <div class="flex gap-6">
+                <label class="flex items-center gap-2 text-sm cursor-pointer text-gray-700 hover:text-red-600">
+                    {{ form_pizza.jamon(class="w-4 h-4 accent-red-600") }}
+                    {{ form_pizza.jamon.label.text }}
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer text-gray-700 hover:text-red-600">
+                    {{ form_pizza.pina(class="w-4 h-4 accent-red-600") }}
+                    {{ form_pizza.pina.label.text }}
+                </label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer text-gray-700 hover:text-red-600">
+                    {{ form_pizza.champinones(class="w-4 h-4 accent-red-600") }}
+                    {{ form_pizza.champinones.label.text }}
+                </label>
+            </div>
+        </div>
+
+        <div class="max-w-xs">
+            {{ macros.campo(form_pizza.num_pizzas) }}
+        </div>
+    </div>
+
+    <div class="flex gap-4">
+        <button type="submit"
+            class="bg-red-600 text-white text-sm px-8 py-3 hover:bg-red-700 transition-colors rounded shadow font-medium">
+            Agregar al pedido
+        </button>
+        <a href="/orden"
+            class="text-sm text-gray-400 px-8 py-3 hover:text-gray-700 transition-colors border border-gray-200 rounded">
+            Cancelar
+        </a>
+    </div>
+</form>
+
+{% endblock %}

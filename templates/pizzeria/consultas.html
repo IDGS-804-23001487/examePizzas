@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block container %}
+
+<div class="mb-8">
+    <h2 class="text-3xl font-bold tracking-tight text-gray-800">Reportes de ventas</h2>
+    <p class="text-sm text-gray-400 mt-1">Consulta las ventas por día o por mes</p>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+    <form method="POST" action="/reportes">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="flex items-end gap-6">
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-red-400 mb-2">Filtrar por</label>
+                <select name="tipo" class="border border-red-200 bg-white text-sm py-2 px-3 rounded focus:outline-none focus:border-red-500 text-gray-700">
+                    <option value="dia" {% if tipo == 'dia' %}selected{% endif %}>Día de la semana</option>
+                    <option value="mes" {% if tipo == 'mes' %}selected{% endif %}>Mes del año</option>
+                </select>
+            </div>
+            <div class="flex-1 max-w-xs">
+                <label class="block text-xs uppercase tracking-widest text-red-400 mb-2">Valor</label>
+                <input type="text" name="busqueda" value="{{ busqueda or '' }}"
+                    placeholder="lunes / enero"
+                    class="w-full border border-red-200 bg-white py-2 px-3 text-sm rounded focus:outline-none focus:border-red-500 text-gray-700">
+            </div>
+            <button type="submit" name="buscar" value="1"
+                class="bg-red-600 text-white text-sm px-6 py-2.5 hover:bg-red-700 transition-colors rounded shadow font-medium">
+                Buscar
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if registros %}
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-red-100">
+        <p class="text-xs uppercase tracking-widest text-red-400">{{ registros|length }} resultados encontrados</p>
+    </div>
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-red-50 text-xs uppercase tracking-widest text-red-400">
+                <th class="text-left px-6 py-3 font-normal">Cliente</th>
+                <th class="text-left px-6 py-3 font-normal">Fecha</th>
+                <th class="text-right px-6 py-3 font-normal">Total</th>
+                <th class="text-right px-6 py-3 font-normal"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in registros %}
+            <tr class="border-b border-red-50 hover:bg-red-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-gray-800">{{ pedido.cliente.nombre }}</td>
+                <td class="px-6 py-4 text-gray-500">{{ pedido.fecha }}</td>
+                <td class="px-6 py-4 text-right font-semibold text-red-600">${{ pedido.total }}</td>
+                <td class="px-6 py-4 text-right">
+                    <form method="POST" action="/reportes" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="tipo" value="{{ tipo }}">
+                        <input type="hidden" name="busqueda" value="{{ busqueda }}">
+                        <input type="hidden" name="id_pedido" value="{{ pedido.id_pedido }}">
+                        <button type="submit" name="ver_detalle" value="1"
+                            class="text-xs text-red-400 hover:text-red-700 underline underline-offset-2">
+                            Ver detalle
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="px-6 py-4 border-t border-red-100 flex justify-end">
+        <div class="text-right">
+            <p class="text-xs text-red-400 uppercase tracking-widest">Total acumulado</p>
+            <p class="text-2xl font-bold text-gray-800">${{ total_acumulado }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if detalle_pedido %}
+<div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-4 bg-red-600">
+        <p class="text-xs uppercase tracking-widest text-red-200 mb-1">Detalle del pedido</p>
+        <h3 class="text-lg font-bold text-white">{{ detalle_pedido.cliente.nombre }}</h3>
+        <p class="text-sm text-red-200">{{ detalle_pedido.fecha }}</p>
+    </div>
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="bg-red-50 text-xs uppercase tracking-widest text-red-400">
+                <th class="text-left px-6 py-3 font-normal">Tamaño</th>
+                <th class="text-left px-6 py-3 font-normal">Extras</th>
+                <th class="text-left px-6 py-3 font-normal">Cantidad</th>
+                <th class="text-right px-6 py-3 font-normal">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for det in detalle_pedido.detalles %}
+            <tr class="border-b border-red-50">
+                <td class="px-6 py-3 font-medium text-gray-800">{{ det.pizza.tamano }}</td>
+                <td class="px-6 py-3 text-gray-500">{{ det.pizza.ingredientes }}</td>
+                <td class="px-6 py-3 text-gray-700">{{ det.cantidad }}</td>
+                <td class="px-6 py-3 text-right font-semibold text-red-600">${{ det.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="px-6 py-4 border-t border-red-100 flex items-center justify-between">
+        <form method="POST" action="/reportes">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="tipo" value="{{ tipo }}">
+            <input type="hidden" name="busqueda" value="{{ busqueda }}">
+            <button type="submit" name="buscar" value="1"
+                class="text-sm text-red-400 hover:text-red-700 underline underline-offset-2">
+                Volver a resultados
+            </button>
+        </form>
+        <div class="text-right">
+            <p class="text-xs text-red-400 uppercase tracking-widest">Total</p>
+            <p class="text-2xl font-bold text-gray-800">${{ detalle_pedido.total }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<a href="/orden" class="text-sm text-red-400 hover:text-red-700 underline underline-offset-2">
+    Volver a pedidos
+</a>
+
+{% endblock %}
